@@ -6,6 +6,7 @@ import com.example.algasensors.temperature.monitoring.domain.model.SensorMonitor
 import com.example.algasensors.temperature.monitoring.domain.repository.SensorMonitoringRepository;
 import io.hypersistence.tsid.TSID;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.Duration;
 
 @RequiredArgsConstructor
 @RestController
@@ -38,14 +42,21 @@ public class SensorMonitoringController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void enableMonitoring(@PathVariable("sensorId") TSID sensorId) {
         SensorMonitoring sensorMonitoring = findByIdOrDefault(sensorId);
+        if (Boolean.TRUE.equals(sensorMonitoring.getEnabled())) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         sensorMonitoring.enable();
         sensorMonitoringRepository.save(sensorMonitoring);
     }
 
+    @SneakyThrows
     @DeleteMapping("/enable")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void disableMonitoring(@PathVariable("sensorId") TSID sensorId) {
         SensorMonitoring sensorMonitoring = findByIdOrDefault(sensorId);
+        if (Boolean.FALSE.equals(sensorMonitoring.getEnabled())) {
+            Thread.sleep(Duration.ofSeconds(10));
+        }
         sensorMonitoring.disable();
         sensorMonitoringRepository.save(sensorMonitoring);
     }
