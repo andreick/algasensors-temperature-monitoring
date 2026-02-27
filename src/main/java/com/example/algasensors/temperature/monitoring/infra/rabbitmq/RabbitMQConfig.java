@@ -19,6 +19,8 @@ public class RabbitMQConfig {
     private static final String MONITOR_TEMPERATURE = "temperature-monitoring.monitor-temperature.v1";
 
     public static final String QUEUE_MONITOR_TEMPERATURE = MONITOR_TEMPERATURE + ".q";
+    public static final String DEAD_LETTER_QUEUE_MONITOR_TEMPERATURE = MONITOR_TEMPERATURE + ".dlq";
+
     public static final String QUEUE_TEMPERATURE_ALERT = "temperature-monitoring-alert-temperature.v1.q";
 
     private static final String TEMPERATURE_RECEIVED_EXCHANGE = "temperature-processing.temperature-received.v1.e";
@@ -35,7 +37,15 @@ public class RabbitMQConfig {
 
     @Bean
     Queue queueMonitorTemperature() {
-        return QueueBuilder.durable(QUEUE_MONITOR_TEMPERATURE).build();
+        return QueueBuilder.durable(QUEUE_MONITOR_TEMPERATURE)
+                .deadLetterExchange("")
+                .deadLetterRoutingKey(DEAD_LETTER_QUEUE_MONITOR_TEMPERATURE)
+                .build();
+    }
+
+    @Bean
+    Queue deadLetterQueueMonitorTemperature() {
+        return QueueBuilder.durable(DEAD_LETTER_QUEUE_MONITOR_TEMPERATURE).build();
     }
 
     @Bean

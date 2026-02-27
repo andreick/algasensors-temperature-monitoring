@@ -24,6 +24,10 @@ public class TemperatureMonitoringService {
 
     @Transactional
     public void monitorTemperature(TemperatureLogData temperatureLogData) {
+        if (temperatureLogData.getValue() > 200) {
+            throw new IllegalArgumentException("Temperature melted this server: " + temperatureLogData.getValue());
+        }
+
         SensorId sensorId = new SensorId(temperatureLogData.getSensorId());
         SensorMonitoring sensor = sensorMonitoringRepository.findById(sensorId).orElse(null);
 
