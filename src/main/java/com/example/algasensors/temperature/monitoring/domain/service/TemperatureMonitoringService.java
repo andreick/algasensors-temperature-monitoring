@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -26,15 +25,15 @@ public class TemperatureMonitoringService {
     @Transactional
     public void monitorTemperature(TemperatureLogData temperatureLogData) {
         SensorId sensorId = new SensorId(temperatureLogData.getSensorId());
-        Optional<SensorMonitoring> sensor = sensorMonitoringRepository.findById(sensorId);
+        SensorMonitoring sensor = sensorMonitoringRepository.findById(sensorId).orElse(null);
 
-        if (!sensor.isPresent()) {
+        if (sensor == null) {
             log.warn("Sensor not found: SensorId {} Temp {}", temperatureLogData.getSensorId(),
                     temperatureLogData.getValue());
             return;
         }
 
-        handleSensorMonitoring(temperatureLogData, sensor.get());
+        handleSensorMonitoring(temperatureLogData, sensor);
     }
 
     private void handleSensorMonitoring(TemperatureLogData temperatureLogData, SensorMonitoring sensor) {

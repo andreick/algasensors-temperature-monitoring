@@ -23,4 +23,12 @@ public class SensorAlert {
     private Double maxTemperature;
 
     private Double minTemperature;
+
+    public boolean maxTemperatureExceeded(Double temperature) {
+        return maxTemperature != null && temperature != null && temperature > maxTemperature;
+    }
+
+    public boolean minTemperatureExceeded(Double temperature) {
+        return minTemperature != null && temperature != null && temperature < minTemperature;
+    }
 }
